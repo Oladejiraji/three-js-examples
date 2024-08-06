@@ -31,3 +31,78 @@ body {
     text-wrap: balance;
   }
 }
+
+.instruction_btns {
+  background-color: white;
+  color: #333;
+  padding: 1px 5px;
+  font-size: 0.75rem;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #6dbee2;
+  border-radius: 2px;
+}
+
+svg text {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.annotationDescription {
+  pointer-events: none;
+  user-select: none;
+  font-size: 14px;
+  position: absolute;
+  top: 20px;
+  padding: 1em;
+  width: 200px;
+  background: rgba(0, 0, 0, 0.66);
+  border-radius: 0.5em;
+  display: block;
+  user-select: none;
+}
+
+#annotationsPanel {
+  position: absolute;
+  top: 60px;
+  left: 4px;
+  width: auto;
+  height: auto;
+}
+
+#annotationsPanel ul {
+  padding: 0;
+  list-style-type: none;
+}
+
+.annotationButton {
+  width: 160px;
+  height: 70px;
+  background-color: rgba(0.25, 0.25, 0.25, 0.5);
+  text-align: left;
+  padding-left: 20px;
+  cursor: pointer;
+  color: #ffffff;
+  font-family: monospace;
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 50px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 8px solid lightblue;
+  border-right-color: orange;
+  animation: l2 1s infinite linear;
+}
+@keyframes l2 {
+  to {
+    transform: rotate(1turn);
+  }
+}
