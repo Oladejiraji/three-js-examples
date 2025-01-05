@@ -1,3 +1,4 @@
+"use client";
 import { useThree } from "@react-three/fiber";
 import React, { useState } from "react";
 import { Html } from "@react-three/drei";

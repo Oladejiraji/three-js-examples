@@ -1,3 +1,4 @@
+"use client";
 import useKeyboard from "@/hooks/useKeyboard";
 import { useFrame } from "@react-three/fiber";
 import React, { MutableRefObject, useMemo, useRef } from "react";
