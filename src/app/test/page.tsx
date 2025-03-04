@@ -1,29 +1,48 @@
 "use client";
-import CurvedPlane from "@/components/Loop/CurvedPlane";
+
 import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import React from "react";
-import * as THREE from "three";
+import Image from "next/image";
 
 const Test = () => {
   return (
-    <Canvas shadows camera={{ position: [4, 3, 9], fov: 60 }}>
-      <Experience />
-      <OrbitControls />
-    </Canvas>
+    <div className="relative">
+      <div className="">
+        <div className="grid grid-cols-4 gap-3">
+          {new Array(100).fill(0).map((_, i) => (
+            <div key={i} className="relative h-[10rem]">
+              <Image src="/images/grid/grid11.jpg" alt="Grid images" fill />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <Canvas
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          // zIndex: 10000,
+          width: "100vw",
+          height: "100vh",
+        }}
+        camera={{
+          position: [0, 0, 30],
+        }}
+      >
+        <OrbitControls />
+        <Experience />
+      </Canvas>
+    </div>
   );
 };
 
 const Experience = () => {
   return (
-    <CurvedPlane width={5} height={5} radius={100}>
-      <meshStandardMaterial
-        side={THREE.DoubleSide}
-        opacity={0.9}
-        transparent
-        toneMapped={true}
-      />
-    </CurvedPlane>
+    <mesh>
+      <meshBasicMaterial color="#000000" />
+      <planeGeometry args={[10, 10]} />
+    </mesh>
   );
 };
 

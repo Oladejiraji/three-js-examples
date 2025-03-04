@@ -1,3 +1,11 @@
+import {
+  BufferGeometry,
+  Material,
+  Mesh,
+  NormalBufferAttributes,
+  Object3DEventMap,
+} from "three";
+
 export interface PositionsType {
   rook_1?: [x: number, y: number, z: number];
   rook_2?: [x: number, y: number, z: number];
