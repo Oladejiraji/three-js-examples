@@ -33,7 +33,7 @@ export const applyCurve = (
   centerX: number,
   delta: number
 ) => {
-  const curveIntensity = Math.abs(delta) * 15;
+  const curveIntensity = Math.abs(delta) * 30;
 
   const positionAttribute = geometry.getAttribute("position");
   const positions = positionAttribute.array as Float32Array;

@@ -8,6 +8,7 @@ import {
   Scroll,
   ScrollControls,
   shaderMaterial,
+  Stats,
   useScroll,
   useTexture,
 } from "@react-three/drei";
@@ -22,6 +23,7 @@ import React, {
 } from "react";
 import { Group, Mesh } from "three";
 import { motion } from "framer-motion-3d";
+import { easing } from "maath";
 
 const Grid = () => {
   const [activeImage, setActiveImage] = useState<null | string>(null);
@@ -41,8 +43,13 @@ const Grid = () => {
           position: [0, 0, 8],
         }}
       >
-        {/* <OrbitControls /> */}
-        <ScrollControls damping={0.05} pages={2} infinite>
+        <Stats />
+        <ScrollControls
+          damping={0.05}
+          pages={2}
+          infinite
+          enabled={!!activeImage === false}
+        >
           <Scroll>
             <Page activeImage={activeImage} setActiveImage={setActiveImage} />
           </Scroll>
@@ -305,8 +312,6 @@ const ImageItem = ({
   const initial_height = TOP_LEFT[1] - index * 2 * IMAGE_HEIGHT;
 
   const geometryRef = useRef<THREE.BufferGeometry>();
-  const prevDelta = useRef(0);
-  const currentDelta = useRef(0);
   const shaderRef = useRef<any>(null);
 
   const [hovered, setHover] = useState(false);
@@ -324,64 +329,43 @@ const ImageItem = ({
     "/images/grid/displacement.jpg",
   ]);
 
-  useFrame(() => {
-    if (geometryRef.current) {
-      const rawDelta = scroll.delta;
-
-      currentDelta.current = THREE.MathUtils.lerp(
-        currentDelta.current,
-        rawDelta,
-        0.2
-      );
-
-      const DELTA_THRESHOLD = 0.0001;
-      const isSignificantDelta =
-        Math.abs(currentDelta.current) > DELTA_THRESHOLD;
-      const isDeltaChanged =
-        Math.abs(currentDelta.current - prevDelta.current) > DELTA_THRESHOLD;
-
-      if (isSignificantDelta || isDeltaChanged) {
-        applyCurve(
-          geometryRef.current,
-          item.positionX,
-          0,
-          currentDelta.current
-        );
-      }
-    }
-    if (shaderRef.current) {
-      shaderRef.current.dispFactor = THREE.MathUtils.lerp(
-        shaderRef.current.dispFactor,
-        hovered ? 1 : 0,
-        0.075
-      );
-    }
+  useFrame((_, delta) => {
+    if (!shaderRef.current) null;
+    easing.damp(
+      shaderRef.current,
+      "uCurvature",
+      scroll.delta * -25,
+      0.2,
+      delta
+    );
+    easing.damp(
+      shaderRef.current,
+      "uScreenWidth",
+      viewport.width - scroll.delta * 200,
+      0.2,
+      delta
+    );
+    shaderRef.current.dispFactor = THREE.MathUtils.lerp(
+      shaderRef.current.dispFactor,
+      hovered ? 1 : 0,
+      0.075
+    );
   });
 
   const centerPosition = item.positionX + item.width / 2;
   const offScreenPosition =
     centerPosition < 0
-      ? { x: -15, y: initial_height }
-      : { x: 15, y: initial_height };
+      ? { x: -15, y: initial_height, z: 0 }
+      : { x: 15, y: initial_height, z: 0 };
 
-  const zeroPosition = { x: 0, y: 0 };
-  const originalPosition = { x: item.positionX, y: initial_height };
+  const zero_y = -(scroll.offset * viewport.height);
+  const zeroPosition = { x: 0, y: zero_y, z: 0.1 };
+  const originalPosition = { x: item.positionX, y: initial_height, z: 0 };
   const translateValue = !!activeImage
     ? activeImage === itemIndex
       ? zeroPosition
       : offScreenPosition
     : originalPosition;
-
-  // useEffect(() => {
-  //   if (!geometryRef?.current) return
-  //   if (!!activeImage === false || activeImage !== itemIndex) {
-  //     geometryRef.current.getAttribute('')
-  //     positionAttribute.needsUpdate = true;
-  //     geometry.computeVertexNormals();
-  //   } else {
-
-  //   }
-  // }, [activeImage])
 
   const isActive = !!activeImage === true && activeImage === itemIndex;
   const itemScale = isActive ? { x: 5, y: 4 } : { x: 1, y: 1 };
@@ -396,6 +380,7 @@ const ImageItem = ({
       animate={{
         x: translateValue.x,
         y: translateValue.y,
+        z: translateValue.z,
         scaleX: itemScale.x,
         scaleY: itemScale.y,
       }}
@@ -407,6 +392,9 @@ const ImageItem = ({
         tex2={texture2}
         disp={dispTexture}
         toneMapped={false}
+        uCurvature={-1}
+        uScreenWidth={viewport.width}
+        uOffsetX={item.positionX}
       />
       {/* <meshBasicMaterial map={texture1} /> */}
     </motion.mesh>
@@ -422,12 +410,25 @@ export const ImageFadeMaterial = shaderMaterial(
     tex: null,
     tex2: null,
     disp: null,
+    uCurvature: 0,
+    uScreenWidth: 0,
+    uOffsetX: 0,
   },
-  ` varying vec2 vUv;
-    void main() {
-      vUv = uv;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-    }`,
+  `uniform float uCurvature;
+  uniform float uScreenWidth;
+  uniform float uOffsetX;
+
+  varying vec2 vUv;
+
+  void main() {
+    vUv = uv;
+    vec3 curvedPosition = position;
+    float relativePosX = (position.x + uOffsetX);
+    float normalizedPosX = (relativePosX + (uScreenWidth / 2.0)) / uScreenWidth;
+    curvedPosition.z = (-sin(normalizedPosX * 3.14)) * uCurvature;
+
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(curvedPosition, 1.0); 
+  }`,
   ` varying vec2 vUv;
     uniform sampler2D tex;
     uniform sampler2D tex2;
