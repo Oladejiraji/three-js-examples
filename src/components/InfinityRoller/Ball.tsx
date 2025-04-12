@@ -13,10 +13,10 @@ const Ball = ({ floor }: { floor: MutableRefObject<GridHelper> }) => {
   const angularVelocity = useMemo(() => new Vector3(), []);
 
   useFrame((_, delta) => {
-    keyMap["KeyW"] && (angularVelocity.x -= delta * 5);
-    keyMap["KeyS"] && (angularVelocity.x += delta * 5);
-    keyMap["KeyA"] && (angularVelocity.z += delta * 5);
-    keyMap["KeyD"] && (angularVelocity.z -= delta * 5);
+    keyMap["KeyW" as keyof typeof keyMap] && (angularVelocity.x -= delta * 5);
+    keyMap["KeyS" as keyof typeof keyMap] && (angularVelocity.x += delta * 5);
+    keyMap["KeyA" as keyof typeof keyMap] && (angularVelocity.z += delta * 5);
+    keyMap["KeyD" as keyof typeof keyMap] && (angularVelocity.z -= delta * 5);
 
     q.setFromAxisAngle(angularVelocity, delta).normalize();
     ref.current.applyQuaternion(q);

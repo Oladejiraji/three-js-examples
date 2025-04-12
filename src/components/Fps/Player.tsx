@@ -44,24 +44,24 @@ const Player = ({ octree }: IProps) => {
     playerDirection: Vector3
   ) {
     const speedDelta = delta * (playerOnFloor ? 25 : 8);
-    keyboard["KeyA"] &&
+    keyboard["KeyA" as keyof typeof keyboard] &&
       playerVelocity.add(
         getSideVector(camera, playerDirection).multiplyScalar(-speedDelta)
       );
-    keyboard["KeyD"] &&
+    keyboard["KeyD" as keyof typeof keyboard] &&
       playerVelocity.add(
         getSideVector(camera, playerDirection).multiplyScalar(speedDelta)
       );
-    keyboard["KeyW"] &&
+    keyboard["KeyW" as keyof typeof keyboard] &&
       playerVelocity.add(
         getForwardVector(camera, playerDirection).multiplyScalar(speedDelta)
       );
-    keyboard["KeyS"] &&
+    keyboard["KeyS" as keyof typeof keyboard] &&
       playerVelocity.add(
         getForwardVector(camera, playerDirection).multiplyScalar(-speedDelta)
       );
     if (playerOnFloor) {
-      if (keyboard["Space"]) {
+      if (keyboard["Space" as keyof typeof keyboard]) {
         playerVelocity.y = 15;
       }
     }

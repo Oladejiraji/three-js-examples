@@ -25,10 +25,10 @@ export default function DirtyBall({
   );
 
   useFrame((_, delta) => {
-    keyMap["KeyW"] && (angularVelocity.x -= delta * 8);
-    keyMap["KeyS"] && (angularVelocity.x += delta * 8);
-    keyMap["KeyD"] && (angularVelocity.z -= delta * 8);
-    keyMap["KeyA"] && (angularVelocity.z += delta * 8);
+    keyMap["KeyW" as keyof typeof keyMap] && (angularVelocity.x -= delta * 8);
+    keyMap["KeyS" as keyof typeof keyMap] && (angularVelocity.x += delta * 8);
+    keyMap["KeyD" as keyof typeof keyMap] && (angularVelocity.z -= delta * 8);
+    keyMap["KeyA" as keyof typeof keyMap] && (angularVelocity.z += delta * 8);
 
     rotator.setFromAxisAngle(angularVelocity, delta).normalize();
     ref.current.applyQuaternion(rotator);
@@ -57,7 +57,7 @@ export default function DirtyBall({
       <mesh
         scale={scaleVector}
         ref={ref}
-        geometry={nodes.dirty_football.geometry}
+        // geometry={nodes.dirty_football.geometry}
         material={materials.dirty_football}
         position={[0.003, 0.114, -0.002]}
       />

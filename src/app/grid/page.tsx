@@ -13,14 +13,7 @@ import {
   useTexture,
 } from "@react-three/drei";
 import { Canvas, extend, useFrame, useThree } from "@react-three/fiber";
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { Dispatch, SetStateAction, useRef, useState } from "react";
 import { Group, Mesh } from "three";
 import { motion } from "framer-motion-3d";
 import { easing } from "maath";
@@ -311,16 +304,9 @@ const ImageItem = ({
   const IMAGE_HEIGHT = viewport.height / 6;
   const initial_height = TOP_LEFT[1] - index * 2 * IMAGE_HEIGHT;
 
-  const geometryRef = useRef<THREE.BufferGeometry>();
   const shaderRef = useRef<any>(null);
 
   const [hovered, setHover] = useState(false);
-
-  useMemo(() => {
-    const segmentsX = Math.max(10, Math.floor(item.width * 5));
-    const geo = new THREE.PlaneGeometry(item.width, IMAGE_HEIGHT, segmentsX, 6);
-    geometryRef.current = geo.clone();
-  }, [item.width, IMAGE_HEIGHT]);
 
   const loadedImg = `/images/grid/grid${(index % 3) + 1}${rowIndex + 1}.jpg`;
   const [texture1, texture2, dispTexture] = useTexture([
@@ -345,11 +331,6 @@ const ImageItem = ({
       0.2,
       delta
     );
-    shaderRef.current.dispFactor = THREE.MathUtils.lerp(
-      shaderRef.current.dispFactor,
-      hovered ? 1 : 0,
-      0.075
-    );
   });
 
   const centerPosition = item.positionX + item.width / 2;
@@ -373,7 +354,6 @@ const ImageItem = ({
   return (
     <motion.mesh
       position={[item.positionX, initial_height, 0]}
-      geometry={geometryRef.current}
       onPointerOver={() => setHover(true)}
       onPointerOut={() => setHover(false)}
       onClick={() => setActiveImage(itemIndex)}
@@ -386,7 +366,8 @@ const ImageItem = ({
       }}
       transition={{ duration: 0.5, delay: 0.1 }}
     >
-      <imageFadeMaterial
+      <planeGeometry args={[item.width, IMAGE_HEIGHT]} />
+      {/* <imageFadeMaterial
         ref={shaderRef}
         tex={texture1}
         tex2={texture2}
@@ -395,59 +376,58 @@ const ImageItem = ({
         uCurvature={-1}
         uScreenWidth={viewport.width}
         uOffsetX={item.positionX}
-      />
-      {/* <meshBasicMaterial map={texture1} /> */}
+      /> */}
     </motion.mesh>
   );
 };
 
 export default Grid;
 
-export const ImageFadeMaterial = shaderMaterial(
-  {
-    effectFactor: 0.5,
-    dispFactor: 0,
-    tex: null,
-    tex2: null,
-    disp: null,
-    uCurvature: 0,
-    uScreenWidth: 0,
-    uOffsetX: 0,
-  },
-  `uniform float uCurvature;
-  uniform float uScreenWidth;
-  uniform float uOffsetX;
+// export const ImageFadeMaterial = shaderMaterial(
+//   {
+//     effectFactor: 0.5,
+//     dispFactor: 0,
+//     tex: null,
+//     tex2: null,
+//     disp: null,
+//     uCurvature: 0,
+//     uScreenWidth: 0,
+//     uOffsetX: 0,
+//   },
+//   `uniform float uCurvature;
+//   uniform float uScreenWidth;
+//   uniform float uOffsetX;
 
-  varying vec2 vUv;
+//   varying vec2 vUv;
 
-  void main() {
-    vUv = uv;
-    vec3 curvedPosition = position;
-    float relativePosX = (position.x + uOffsetX);
-    float normalizedPosX = (relativePosX + (uScreenWidth / 2.0)) / uScreenWidth;
-    curvedPosition.z = (-sin(normalizedPosX * 3.14)) * uCurvature;
+//   void main() {
+//     vUv = uv;
+//     vec3 curvedPosition = position;
+//     float relativePosX = (position.x + uOffsetX);
+//     float normalizedPosX = (relativePosX + (uScreenWidth / 2.0)) / uScreenWidth;
+//     curvedPosition.z = (-sin(normalizedPosX * 3.14)) * uCurvature;
 
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(curvedPosition, 1.0); 
-  }`,
-  ` varying vec2 vUv;
-    uniform sampler2D tex;
-    uniform sampler2D tex2;
-    uniform sampler2D disp;
-    uniform float _rot;
-    uniform float dispFactor;
-    uniform float effectFactor;
-    void main() {
-      vec2 uv = vUv;
-      vec4 disp = texture2D(disp, uv);
-      vec2 distortedPosition = vec2(uv.x + dispFactor * (disp.r*effectFactor), uv.y);
-      vec2 distortedPosition2 = vec2(uv.x - (1.0 - dispFactor) * (disp.r*effectFactor), uv.y);
-      vec4 _texture = texture2D(tex, distortedPosition);
-      vec4 _texture2 = texture2D(tex2, distortedPosition2);
-      vec4 finalTexture = mix(_texture, _texture2, dispFactor);
-      gl_FragColor = finalTexture;
-      #include <tonemapping_fragment>
-      #include <colorspace_fragment>
-    }`
-);
+//     gl_Position = projectionMatrix * modelViewMatrix * vec4(curvedPosition, 1.0);
+//   }`,
+//   ` varying vec2 vUv;
+//     uniform sampler2D tex;
+//     uniform sampler2D tex2;
+//     uniform sampler2D disp;
+//     uniform float _rot;
+//     uniform float dispFactor;
+//     uniform float effectFactor;
+//     void main() {
+//       vec2 uv = vUv;
+//       vec4 disp = texture2D(disp, uv);
+//       vec2 distortedPosition = vec2(uv.x + dispFactor * (disp.r*effectFactor), uv.y);
+//       vec2 distortedPosition2 = vec2(uv.x - (1.0 - dispFactor) * (disp.r*effectFactor), uv.y);
+//       vec4 _texture = texture2D(tex, distortedPosition);
+//       vec4 _texture2 = texture2D(tex2, distortedPosition2);
+//       vec4 finalTexture = mix(_texture, _texture2, dispFactor);
+//       gl_FragColor = finalTexture;
+//       #include <tonemapping_fragment>
+//       #include <colorspace_fragment>
+//     }`
+// );
 
-extend({ ImageFadeMaterial });
+// extend({ ImageFadeMaterial });

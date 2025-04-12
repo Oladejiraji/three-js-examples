@@ -18,10 +18,10 @@ const Box = (props: any) => {
       hovered ? 1.2 : 1,
       0.1
     );
-    ref.current.material.color.lerp(
-      color.set(hovered ? 0xff0000 : 0x00ff00),
-      0.1
-    );
+    // ref.current.material.color.lerp(
+    //   color.set(hovered ? 0xff0000 : 0x00ff00),
+    //   0.1
+    // );
   });
 
   return (

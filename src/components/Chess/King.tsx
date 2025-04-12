@@ -9,7 +9,7 @@ interface IProps {
   materials: any;
   handleClick: (e: ThreeEvent<MouseEvent>) => void;
   position: [x: number, y: number, z: number];
-  color: "w" | "b";
+  color: string;
 }
 
 const King = (props: IProps) => {

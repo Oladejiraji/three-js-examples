@@ -20,11 +20,11 @@ const Model = forwardRef(function Model(_, ref: ForwardedRef<Group>) {
       scale={[2, 2, 2]}
     >
       <mesh
-        geometry={nodes["Modern_rug_Plane004-Mesh"].geometry}
+        // geometry={nodes["Modern_rug_Plane004-Mesh"].geometry}
         material={materials["78909C"]}
       />
       <mesh
-        geometry={nodes["Modern_rug_Plane004-Mesh_1"].geometry}
+        // geometry={nodes["Modern_rug_Plane004-Mesh_1"].geometry}
         material={materials["455A64"]}
       />
     </group>

@@ -21,7 +21,7 @@ export default function Home() {
         <Suspense fallback={<Loader />}>
           <Environment files="/images/venice_sunrise_4k.hdr" />
           <House />
-          <Tween />
+          {/* <Tween /> */}
           <Annotations controls={ref} />
         </Suspense>
       </Canvas>
