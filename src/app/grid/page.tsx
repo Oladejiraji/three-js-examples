@@ -37,7 +37,7 @@ const Grid = () => {
           position: [0, 0, 8],
         }}
       >
-        <Stats />
+        {/* <Stats /> */}
         <ScrollControls
           damping={0.05}
           pages={2}
@@ -306,6 +306,7 @@ const ImageItem = ({
   const initial_height = TOP_LEFT[1] - index * 2 * IMAGE_HEIGHT;
 
   const shaderRef = useRef<any>(null);
+  const directionRef = useRef(0);
 
   const [hovered, setHover] = useState(false);
 
@@ -318,17 +319,19 @@ const ImageItem = ({
 
   useFrame((_, delta) => {
     if (!shaderRef.current) null;
+
+    const multiplier = directionRef.current - scroll.offset > 0 ? 1 : -1;
     easing.damp(
       shaderRef.current,
       "uCurvature",
-      scroll.delta * -25,
+      scroll.delta * multiplier * 25,
       0.2,
       delta
     );
     easing.damp(
       shaderRef.current,
       "uScreenWidth",
-      viewport.width - scroll.delta * 100,
+      viewport.width - scroll.delta * 120 * -multiplier,
       0.2,
       delta
     );
@@ -345,6 +348,8 @@ const ImageItem = ({
         0.075
       );
     }
+
+    directionRef.current = scroll.offset;
   });
 
   const centerPosition = item.positionX + item.width / 2;
