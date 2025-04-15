@@ -39,7 +39,8 @@ const Grid = () => {
       >
         {/* <Stats /> */}
         <ScrollControls
-          damping={0.05}
+          damping={0.01}
+          maxSpeed={100}
           pages={2}
           infinite
           enabled={!!activeImage === false}
@@ -321,6 +322,7 @@ const ImageItem = ({
     if (!shaderRef.current) null;
 
     const multiplier = directionRef.current - scroll.offset > 0 ? 1 : -1;
+
     easing.damp(
       shaderRef.current,
       "uCurvature",
